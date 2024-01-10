@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 
-
 double currentTime = 0;
 double lastTime = glfwGetTime();
 int numFrames = 0;
@@ -557,14 +556,14 @@ int main() {
 		}
 	}
 
-	vk::CommandBuffer mainCommandBuffer;
-	try {
-		mainCommandBuffer = device.allocateCommandBuffers(allocateInfo)[0];
-		std::cout << "Allocated the main command buffer" << std::endl;
-	} catch(vk::SystemError error) {
-		std::cerr << "Failed to create main command buffer: " << *error.what() << std::endl;
-		return -1;
-	}
+	// vk::CommandBuffer mainCommandBuffer;
+	// try {
+	// 	mainCommandBuffer = device.allocateCommandBuffers(allocateInfo)[0];
+	// 	std::cout << "Allocated the main command buffer" << std::endl;
+	// } catch(vk::SystemError error) {
+	// 	std::cerr << "Failed to create main command buffer: " << *error.what() << std::endl;
+	// 	return -1;
+	// }
 
 	// Destroy shaders
 	device.destroyShaderModule(vertexShader);
