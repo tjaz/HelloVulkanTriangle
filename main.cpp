@@ -143,7 +143,6 @@ int main() {
                 break;
             case vk::PhysicalDeviceType::eDiscreteGpu:
                 std::cout << "Discrete GPU" << std::endl;
-//				vk::PhysicalDeviceProperties prop = physicalDevice.getProperties();
 				if (physicalDevice.getProperties().deviceType != properties.deviceType) {
 					physicalDevice = device;
 				}
