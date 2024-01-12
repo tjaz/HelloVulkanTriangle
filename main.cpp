@@ -703,13 +703,13 @@ int main() {
 	device.destroyPipeline(graphicsPipeline);
 	device.destroyPipelineLayout(pipelineLayout);
 	device.destroyRenderPass(renderPass);
-    device.destroySwapchainKHR(swapChain);
-    instance->destroySurfaceKHR(vkSurface);
-    device.destroy();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+	device.destroySwapchainKHR(swapChain);
+	instance->destroySurfaceKHR(vkSurface);
+	device.destroy();
 	
-    return 0;
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	
+	return 0;
 }
 
