@@ -21,7 +21,7 @@ void calculateFrameRate(GLFWwindow* window) {
 		numFrames = -1;
 		frameTime = float(1000.0 / framerate);
 	}
-
+	
 	numFrames++;
 }
 
@@ -711,7 +711,7 @@ int main() {
 
     glfwDestroyWindow(window);
     glfwTerminate();
-
+	
     return 0;
 }
 
