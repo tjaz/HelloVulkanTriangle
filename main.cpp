@@ -68,113 +68,111 @@ vk::ShaderModule createShaderModule(std::string filename, vk::Device device) {
 
 
 int main() {
-    // Initialize GLFW
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
-        return -1;
-    }
+	// Initialize GLFW
+	if (!glfwInit()) {
+	std::cerr << "Failed to initialize GLFW" << std::endl;
+	return -1;
+	}
 
 	int major, minor, rev;
 	glfwGetVersion(&major, &minor, &rev);
 	std::cout << "GLFW Version: " << major << "." << minor << "." << rev << std::endl;
 
 	// Get required Vulkan instance extensions
-    uint32_t glfwExtensionsCount = 0;
-    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
+	uint32_t glfwExtensionsCount = 0;
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
 
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionsCount);
 
-    std::cout << "Required Vulkan Instance Extensions:" << std::endl << std::endl;
-    for (auto extensionName : extensions) {
-        std::cout << extensionName << std::endl;
-    }
+	std::cout << "Required Vulkan Instance Extensions:" << std::endl << std::endl;
+	for (auto extensionName : extensions) {
+	std::cout << extensionName << std::endl;
+	}
 	std::cout << std::endl;
 
-    // Create a GLFW window
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan Cube Demo", nullptr, nullptr);
+	// Create a GLFW window
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan Cube Demo", nullptr, nullptr);
 
 	if (!glfwVulkanSupported()) {
     	std::cout << "GLFW Vulkan not supported" << std::endl;
     	return -1;
 	}
 
-    // Initialize Vulkan
-    vk::ApplicationInfo appInfo("Vulkan Cube Demo", 1, nullptr, 0, VK_API_VERSION_1_0);
+	// Initialize Vulkan
+	vk::ApplicationInfo appInfo("Vulkan Cube Demo", 1, nullptr, 0, VK_API_VERSION_1_0);
+	
+	// Enable the VK_LAYER_KHRONOS_validation layer
+	const char* validationLayer = "VK_LAYER_KHRONOS_validation";
 
-    // Enable the VK_LAYER_KHRONOS_validation layer
-    const char* validationLayer = "VK_LAYER_KHRONOS_validation";
-
-    vk::InstanceCreateInfo instanceInfo(
-        vk::InstanceCreateFlags(),
-        &appInfo,
-        1, &validationLayer,
+	vk::InstanceCreateInfo instanceInfo(
+	vk::InstanceCreateFlags(),
+	&appInfo,
+	1, &validationLayer,
 		static_cast<uint32_t>(extensions.size()), extensions.data()
-    );
+	);
 
 	// Create vulkan instance
 	vk::UniqueInstance instance;
 	try {
-	    instance = vk::createInstanceUnique(instanceInfo);
+		instance = vk::createInstanceUnique(instanceInfo);
 	} catch (const vk::SystemError& e) {
-	    std::cerr << "Vulkan instance creation failed with error: " << e.what() << std::endl;
-	    return -1;
+		std::cerr << "Vulkan instance creation failed with error: " << e.what() << std::endl;
+		return -1;
 	}
 	
 	std::cout << "Supported Vulkan-compatible devices:" << std::endl;
 	std::vector<vk::PhysicalDevice> physicalDevices = instance->enumeratePhysicalDevices();
 	if (physicalDevices.empty()) {
-	    std::cerr << "No Vulkan-compatible devices found" << std::endl;
-	    return -1;
+		std::cerr << "No Vulkan-compatible devices found" << std::endl;
+		return -1;
 	}
 	
 	// Select the discrete physical device
 	vk::PhysicalDevice physicalDevice = physicalDevices.front();
 	// Iterate over the physical devices
-    for (const auto& device : physicalDevices) {
-        // Access properties of each physical device
-        vk::PhysicalDeviceProperties properties = device.getProperties();
-        std::cout << "Device Name: " << properties.deviceName << std::endl;
+	for (const auto& device : physicalDevices) {
+		// Access properties of each physical device
+		vk::PhysicalDeviceProperties properties = device.getProperties();
+		std::cout << "Device Name: " << properties.deviceName << std::endl;
 		// Check if the device is discrete or integrated
-        std::cout << "Device Type: ";
-        switch (properties.deviceType) {
-            case vk::PhysicalDeviceType::eIntegratedGpu:
-                std::cout << "Integrated GPU" << std::endl;
-                break;
-            case vk::PhysicalDeviceType::eDiscreteGpu:
-                std::cout << "Discrete GPU" << std::endl;
-				if (physicalDevice.getProperties().deviceType != properties.deviceType) {
-					physicalDevice = device;
-				}
-                break;
-            case vk::PhysicalDeviceType::eVirtualGpu:
-                std::cout << "Virtual GPU" << std::endl;
-                break;
-            case vk::PhysicalDeviceType::eCpu:
-                std::cout << "CPU" << std::endl;
-                break;
-            case vk::PhysicalDeviceType::eOther:
-                std::cout << "Other" << std::endl;
-                break;
-            default:
-                std::cout << "Unknown" << std::endl;
-                break;
-        }
-    }
+		std::cout << "Device Type: ";
+	        switch (properties.deviceType) {
+	            case vk::PhysicalDeviceType::eIntegratedGpu:
+	                std::cout << "Integrated GPU" << std::endl;
+	                break;
+	            case vk::PhysicalDeviceType::eDiscreteGpu:
+	                std::cout << "Discrete GPU" << std::endl;
+			if (physicalDevice.getProperties().deviceType != properties.deviceType) {
+				physicalDevice = device;
+			}
+	                break;
+	            case vk::PhysicalDeviceType::eVirtualGpu:
+	                std::cout << "Virtual GPU" << std::endl;
+	                break;
+	            case vk::PhysicalDeviceType::eCpu:
+	                std::cout << "CPU" << std::endl;
+	                break;
+	            case vk::PhysicalDeviceType::eOther:
+	                std::cout << "Other" << std::endl;
+	                break;
+	            default:
+	                std::cout << "Unknown" << std::endl;
+	                break;
+	        }
+	}
 	
 	std::cout << std::endl;
-	std::cout << "Current physical device: " << physicalDevice.getProperties().deviceName << std::endl;
-   
+	std::cout << "Current physical device: " << physicalDevice.getProperties().deviceName << std::endl;   
 
-    // Access memory properties
-    vk::PhysicalDeviceMemoryProperties memoryProperties = physicalDevice.getMemoryProperties();
-
-    // Calculate total memory size in gigabytes
-    double totalMemoryGB = static_cast<double>(memoryProperties.memoryHeaps[0].size) / (1 << 30);
-
-    // Print total memory size
-    std::cout << "Total Memory: " << totalMemoryGB << " GB" << std::endl;
-
+	// Access memory properties
+	vk::PhysicalDeviceMemoryProperties memoryProperties = physicalDevice.getMemoryProperties();
+	
+	// Calculate total memory size in gigabytes
+	double totalMemoryGB = static_cast<double>(memoryProperties.memoryHeaps[0].size) / (1 << 30);
+	
+	// Print total memory size
+	std::cout << "Total Memory: " << totalMemoryGB << " GB" << std::endl;
 	
 //	// Print supported device extensions
 //	auto supportedExtensions = physicalDevice.enumerateDeviceExtensionProperties();
@@ -188,47 +186,47 @@ int main() {
 	std::cout << std::endl;
 	std::cout << "Supported Instance Extensions:" << std::endl;
 	for (const auto& extension : supportedInstanceExtensions) {
-	    std::cout << extension.extensionName << std::endl;
+		std::cout << extension.extensionName << std::endl;
 	}
 	
 	// Get queue family properties
 	std::cout << std::endl;
 	std::cout << "Supported queue families on current physical device:" << std::endl;
-    std::vector<vk::QueueFamilyProperties> queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
+	std::vector<vk::QueueFamilyProperties> queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
 	
-    // Find a queue family that supports graphics operations
-    uint32_t graphicsQueueFamilyIndex = static_cast<uint32_t>(-1);
-    for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties.size()); ++i) {
+	// Find a queue family that supports graphics operations
+	uint32_t graphicsQueueFamilyIndex = static_cast<uint32_t>(-1);
+	for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties.size()); ++i) {
 		const auto& queueFamily = queueFamilyProperties[i];
 
-        // Print information about the queue family
-        std::cout << "Queue Family Index: " << i << std::endl;
-        std::cout << "Queue Count: " << queueFamily.queueCount << std::endl;
-
-        // Print supported queue flags
-        std::cout << "Supported Queue Flags: " << std::endl;
-        if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics) {
-            std::cout << "Graphics " << std::endl;
+	        // Print information about the queue family
+	        std::cout << "Queue Family Index: " << i << std::endl;
+	        std::cout << "Queue Count: " << queueFamily.queueCount << std::endl;
+	
+	        // Print supported queue flags
+	        std::cout << "Supported Queue Flags: " << std::endl;
+	        if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics) {
+			std::cout << "Graphics " << std::endl;
 			if (graphicsQueueFamilyIndex == static_cast<uint32_t>(-1)) {
 				graphicsQueueFamilyIndex = i;
 			}
-        }
-        if (queueFamily.queueFlags & vk::QueueFlagBits::eCompute) {
-            std::cout << "Compute " << std::endl;
-        }
-        if (queueFamily.queueFlags & vk::QueueFlagBits::eTransfer) {
-            std::cout << "Transfer " << std::endl;
-        }
-        if (queueFamily.queueFlags & vk::QueueFlagBits::eSparseBinding) {
-            std::cout << "SparseBinding " << std::endl;
-        }
-        std::cout << std::endl;
-    }
+	        }
+	        if (queueFamily.queueFlags & vk::QueueFlagBits::eCompute) {
+			std::cout << "Compute " << std::endl;
+	        }
+	        if (queueFamily.queueFlags & vk::QueueFlagBits::eTransfer) {
+			std::cout << "Transfer " << std::endl;
+	        }
+	        if (queueFamily.queueFlags & vk::QueueFlagBits::eSparseBinding) {
+			std::cout << "SparseBinding " << std::endl;
+	        }
+		std::cout << std::endl;
+	}
 
-    if (graphicsQueueFamilyIndex == static_cast<uint32_t>(-1)) {
-        std::cerr << "No queue family supports graphics operations" << std::endl;
-        return -1;
-    } else {
+	if (graphicsQueueFamilyIndex == static_cast<uint32_t>(-1)) {
+		std::cerr << "No queue family supports graphics operations" << std::endl;
+		return -1;
+	} else {
 		std::cout << "Current graphics queue family index: " << graphicsQueueFamilyIndex << std::endl;
 	}
 
@@ -236,30 +234,30 @@ int main() {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 
-    // Specify the graphics queue information
-    float queuePriority = 1.0f; // Specify the queue priority
-    vk::DeviceQueueCreateInfo queueCreateInfo({}, graphicsQueueFamilyIndex, 1, &queuePriority);
-
-    // Specify device features (you might want to customize this based on your requirements)
-    vk::PhysicalDeviceFeatures deviceFeatures;
-
-    // Create the device
-    vk::DeviceCreateInfo deviceCreateInfo({}, 1, &queueCreateInfo, 0, nullptr, deviceExtensions.size(), deviceExtensions.data(), &deviceFeatures);
+	// Specify the graphics queue information
+	float queuePriority = 1.0f; // Specify the queue priority
+	vk::DeviceQueueCreateInfo queueCreateInfo({}, graphicsQueueFamilyIndex, 1, &queuePriority);
+	
+	// Specify device features (you might want to customize this based on your requirements)
+	vk::PhysicalDeviceFeatures deviceFeatures;
+	
+	// Create the device
+	vk::DeviceCreateInfo deviceCreateInfo({}, 1, &queueCreateInfo, 0, nullptr, deviceExtensions.size(), deviceExtensions.data(), &deviceFeatures);
 	vk::Device device = physicalDevice.createDevice(deviceCreateInfo);
 	
-    // Create a Vulkan surface
-    VkSurfaceKHR surface;
+	// Create a Vulkan surface
+	VkSurfaceKHR surface;
 	auto result = glfwCreateWindowSurface(static_cast<VkInstance>(*instance), window, nullptr, &surface);
-    if (result != VK_SUCCESS) {
-        std::cerr << "Failed to create window surface" << std::endl;
-        return -1;
-    }
+	if (result != VK_SUCCESS) {
+		std::cerr << "Failed to create window surface" << std::endl;
+		return -1;
+	}
 
-    vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(surface);
+	vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(surface);
 	vk::Extent2D extent = surfaceCapabilities.currentExtent;
-
+	
 	std::cout << "Supported swapchain images:" << std::endl;
-
+	
 	// Get the minimum number of images supported by the swap chain
 	uint32_t minImageCount = surfaceCapabilities.minImageCount;
 	std::cout << "Minimum number of swap chain images: " << minImageCount << std::endl;
@@ -268,15 +266,15 @@ int main() {
 	uint32_t maxImageCount = surfaceCapabilities.maxImageCount;
 	std::cout << "Maximum number of swap chain images: " << maxImageCount << std::endl;
 
-    vk::SurfaceKHR vkSurface(surface);
-
+	vk::SurfaceKHR vkSurface(surface);
+	
 	// Print supported surface formats
 	auto surfaceFormats = physicalDevice.getSurfaceFormatsKHR(vkSurface);
 	
 	std::cout << std::endl;
 	std::cout << "Supported Surface Formats:" << std::endl;
 	for (const auto& format : surfaceFormats) {
-	    std::cout << "Format: " << vk::to_string(format.format) << ", Color Space: " << vk::to_string(format.colorSpace) << std::endl;
+		std::cout << "Format: " << vk::to_string(format.format) << ", Color Space: " << vk::to_string(format.colorSpace) << std::endl;
 	}
 
 	// Print supported present modes
@@ -284,23 +282,23 @@ int main() {
 	std::cout << std::endl;
 	std::cout << "Supported Present Modes:" << std::endl;
 	for (const auto& mode : presentModes) {
-	    std::cout << vk::to_string(mode) << std::endl;
+		std::cout << vk::to_string(mode) << std::endl;
 	}
 	
 	vk::Format swapchainImageFormat = vk::Format::eB8G8R8A8Unorm; 
 
 	// Create a Vulkan swap chain (for simplicity, not handling details like format, present mode, etc.)
-    vk::SwapchainCreateInfoKHR createInfo;
-    createInfo.surface = vkSurface;
-    createInfo.minImageCount = minImageCount;
-    createInfo.imageFormat = swapchainImageFormat;
-    createInfo.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
-    createInfo.imageExtent = extent;
-    createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
-    createInfo.imageSharingMode = vk::SharingMode::eExclusive;
+	vk::SwapchainCreateInfoKHR createInfo;
+	createInfo.surface = vkSurface;
+	createInfo.minImageCount = minImageCount;
+	createInfo.imageFormat = swapchainImageFormat;
+	createInfo.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+	createInfo.imageSharingMode = vk::SharingMode::eExclusive;
 
-    vk::SwapchainKHR swapChain;
+	vk::SwapchainKHR swapChain;
 	
 	try {
 		swapChain = device.createSwapchainKHR(createInfo);
@@ -345,8 +343,8 @@ int main() {
 		}
 	}
 
-    // Create a queue
-    vk::Queue graphicsQueue = device.getQueue(graphicsQueueFamilyIndex, 0);	
+	// Create a queue
+	vk::Queue graphicsQueue = device.getQueue(graphicsQueueFamilyIndex, 0);	
 	std::cout << std::endl;
 
 	std::vector<vk::PipelineShaderStageCreateInfo> shaderStages;
@@ -357,7 +355,7 @@ int main() {
 	vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	
 	// Input assembly
-    vk::PipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+	vk::PipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 	inputAssemblyInfo.flags = vk::PipelineInputAssemblyStateCreateFlags();
 	inputAssemblyInfo.topology = vk::PrimitiveTopology::eTriangleList;
 
@@ -601,7 +599,7 @@ int main() {
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
-	    glfwPollEvents();
+		glfwPollEvents();
 		
 		if (device.waitForFences(1, &fence, VK_TRUE, UINT64_MAX) != vk::Result::eSuccess) {
 			std::cerr << "Failed to wait on the fence" << std::endl;
@@ -614,7 +612,7 @@ int main() {
 
 		uint32_t imageIndex = device.acquireNextImageKHR(swapChain, UINT64_MAX, semaphores[0], nullptr).value;
 		
-	    // Rendering code goes here
+		// Rendering code goes here
 		vk::ClearValue clearColor(std::array<float, 4>{0.0, 0.0, 0.0, 1.0});
 
 		// Create renderPass info
@@ -648,7 +646,7 @@ int main() {
 			return -1;
 		}
 
-	    // End rendering
+		// End rendering
 
 		vk::PipelineStageFlags waitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
 		
@@ -659,28 +657,28 @@ int main() {
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer;
-	    submitInfo.signalSemaphoreCount = 1;
-	    submitInfo.pSignalSemaphores = &semaphores[1];
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = &semaphores[1];
 
 		try {
-	    	graphicsQueue.submit(submitInfo, fence);
+	    		graphicsQueue.submit(submitInfo, fence);
 		} catch (vk::SystemError error) {
 			std::cerr << "Failed to submid draw command buffer: " << std::endl;
 			return -1;
 		}
 
-	    // Present the image using the swap chain's queue
+		// Present the image using the swap chain's queue
+		
+		// Configure presentInfo
+		vk::PresentInfoKHR presentInfo;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &swapChain;
+		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &semaphores[1];
 
-        // Configure presentInfo
-        vk::PresentInfoKHR presentInfo;
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = &swapChain;
-        presentInfo.pImageIndices = &imageIndex;
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = &semaphores[1];
-
-        // Submit the present request
-        if (graphicsQueue.presentKHR(presentInfo) != vk::Result::eSuccess) {
+		// Submit the present request
+		if (graphicsQueue.presentKHR(presentInfo) != vk::Result::eSuccess) {
 			std::cerr << "Failed to present the draw image on queue" << std::endl;
 			return -1;
 		}
@@ -690,7 +688,7 @@ int main() {
 
 	device.waitIdle();
 
-    // Cleanup
+	// Cleanup
 	for (auto& semaphore : semaphores) {
 		device.destroySemaphore(semaphore);
 	}
