@@ -92,15 +92,10 @@ int main() {
 
     // Create a GLFW window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan Cube Demo", nullptr, nullptr);
-
-    if (!glfwVulkanSupported()) {
-        std::cout << "GLFW Vulkan not supported" << std::endl;
-        return -1;
-    }
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Hello Vulkan Triangle Demo", nullptr, nullptr);
 
     // Initialize Vulkan
-    vk::ApplicationInfo appInfo("Vulkan Cube Demo", 1, nullptr, 0, VK_API_VERSION_1_0);
+    vk::ApplicationInfo appInfo("Hello Vulkan Triangle Demo", 1, nullptr, 0, VK_API_VERSION_1_0);
 
     // Enable the VK_LAYER_KHRONOS_validation layer
     const char* validationLayer = "VK_LAYER_KHRONOS_validation";
