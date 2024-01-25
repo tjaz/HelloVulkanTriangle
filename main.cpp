@@ -112,7 +112,7 @@ int main() {
     try {
         instance = vk::createInstanceUnique(instanceInfo);
     } catch (const vk::SystemError& e) {
-        std::cerr << "Vulkan instance creation failed with error: " << e.what() << std::endl;
+        std::cerr << std::string("Vulkan instance creation failed with error: ") + e.what() << std::endl;
         return -1;
     }
 
@@ -299,7 +299,7 @@ int main() {
         swapChain = device.createSwapchainKHR(createInfo);
 
     } catch (vk::SystemError error) {
-        std::cerr << "Failed to create swapchain: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create swapchain: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -333,7 +333,7 @@ int main() {
             swapChainImageViews.push_back(imageView);
 
         } catch (const vk::SystemError& e) {
-            std::cerr << "Failed to create image view: " << e.what() << std::endl;
+            std::cerr << std::string("Failed to create image view: ") + e.what() << std::endl;
             return -1;
         }
     }
@@ -432,7 +432,7 @@ int main() {
     try {
         pipelineLayout = device.createPipelineLayout(layoutInfo);
     } catch (vk::SystemError error) {
-        std::cerr << "Failed to create pipeline layout: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create pipeline layout: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -469,7 +469,7 @@ int main() {
     try {
         renderPass = device.createRenderPass(renderpassInfo);
     } catch (vk::SystemError error) {
-        std::cerr <<"Failed to create the renderpass: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create the renderpass: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -492,7 +492,7 @@ int main() {
     try {
         graphicsPipeline = device.createGraphicsPipeline(nullptr, pipelineInfo).value;
     } catch(vk::SystemError error) {
-        std::cerr << "Failed to create graphics pipeline: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create graphics pipeline: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -513,7 +513,7 @@ int main() {
             framebuffers[i] = device.createFramebuffer(framebufferInfo);
             std::cout << "Created framebuffer for frame: " << i << std::endl;
         } catch (vk::SystemError error) {
-            std::cerr << "Failed to create framebuffer for frame: " << i << " and reason: " << *error.what() << std::endl;
+            std::cerr << std::string("Failed to create framebuffer for frame: ") + std::to_string(i) + " and reason: " + error.what() << std::endl;
             return -1;
         }
     }
@@ -527,7 +527,7 @@ int main() {
     try {
         commandPool = device.createCommandPool(poolInfo);
     } catch(vk::SystemError error) {
-        std::cerr << "Failed to create command pool: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create command pool: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -571,7 +571,7 @@ int main() {
         try {
             semaphore = device.createSemaphore(semaphoreInfo);
         } catch (vk::SystemError error) {
-            std::cerr << "Failed to create the semaphore: " << *error.what() << std::endl;
+            std::cerr << std::string("Failed to create the semaphore: ") + error.what() << std::endl;
             return -1;
         }
     }
@@ -586,7 +586,7 @@ int main() {
         fence = device.createFence(fenceInfo);
         std::cout << "Successfully created fence" << std::endl;
     } catch (vk::SystemError error) {
-        std::cerr << "Failed to create fence: " << *error.what() << std::endl;
+        std::cerr << std::string("Failed to create fence: ") + error.what() << std::endl;
         return -1;
     }
 
@@ -627,7 +627,7 @@ int main() {
         try {
             commandBuffer.begin(beginInfo);
         } catch (vk::SystemError error) {
-            std::cerr << "Failed to begin rendering command buffer: " << *error.what() << std::endl;
+            std::cerr << std::string("Failed to begin rendering command buffer: ") + error.what() << std::endl;
             return -1;
         }
         commandBuffer.beginRenderPass(&renderPassInfo, vk::SubpassContents::eInline);
@@ -637,7 +637,7 @@ int main() {
         try {
             commandBuffer.end();
         } catch (vk::SystemError error) {
-            std::cerr << "Failed to finish recording command buffer: " << *error.what() << std::endl;
+            std::cerr << std::string("Failed to finish recording command buffer: ") + error.what() << std::endl;
             return -1;
         }
 
