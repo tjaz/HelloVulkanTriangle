@@ -1,19 +1,27 @@
-vpath %Vertex.spv ./debug
-vpath %Fragment.spv ./debug
+SCR_DIR := ./
+BUILD_DIR := ./build
 
-SRC := $(wildcard ../*.frag ../*.vert)
-OUT1 := $(SRC:.vert=Vertex.spv)
-OUT2 := $(OUT1:.frag=Fragment.spv)
+vpath %.spv $(BUILD_DIR)
 
-all: ./debug $(OUT2)
-	echo $(SRC)
-.PHONY = all
+SRCS := $(wildcard $(SRC_DIR)*.frag $(SRC_DIR)*.vert)
 
-./debug:
-	mkdir -p debug
+OBJS := $(SRCS:%.frag=$(BUILD_DIR)/%Fragment.spv)
+OBJS := $(OBJS:%.vert=$(BUILD_DIR)/%Vertex.spv)
 
-%Vertex.spv: %.vert
-	$(shell glslc -o ./debug/$@ $<)
+COMPILE = $(shell mkdir -p $(BUILD_DIR) && glslc -o $(2) $(1))
 
-%Fragment.spv: %.frag
-	$(shell glslc -o ./debug/$@ $<)
+#COMPILE = $(shell mkdir -p $(dir $(2)) && glslc -o $(2) $(1))
+#COMPILE = 0:$(0) 1:$(1) 2:$(2)
+
+
+entry: $(OBJS)
+	@echo SRCS: $(SRCS)
+	@echo OBJS: $(OBJS)
+
+$(BUILD_DIR)/%Vertex.spv: %.vert
+	$(call COMPILE,$<,$@)
+
+$(BUILD_DIR)/%Fragment.spv: %.frag
+	$(call COMPILE,$<,$@)
+
+.PHONY: entry
