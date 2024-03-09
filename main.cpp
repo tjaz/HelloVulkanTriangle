@@ -292,6 +292,7 @@ int main() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
     createInfo.imageSharingMode = vk::SharingMode::eExclusive;
+	createInfo.presentMode = vk::PresentModeKHR::eFifo;
 
     vk::SwapchainKHR swapChain;
 
